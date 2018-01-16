@@ -1,4 +1,4 @@
-package com.akaldobaie.udacity.abnd.newsapp;
+package com.akaldobaie.udacity.abnd.newsapp1;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
 		// Context of the app under test.
 		Context appContext = InstrumentationRegistry.getTargetContext();
 		
-		assertEquals("com.akaldobaie.udacity.abnd.newsapp", appContext.getPackageName());
+		assertEquals("com.akaldobaie.udacity.abnd.newsapp1", appContext.getPackageName());
 	}
 }

@@ -1,4 +1,4 @@
-package com.akaldobaie.udacity.abnd.newsapp;
+package com.akaldobaie.udacity.abnd.newsapp1;
 
 import org.junit.Test;
 
