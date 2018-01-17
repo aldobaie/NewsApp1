@@ -1,7 +1,9 @@
 <resources>
 	<string name="app_name">News App</string>
-	<string name="no_data_available">No data available!</string>
-	<string name="no_internet_connection">No internet connection!</string>
+	
+	<string name="no_data_available">Oops!\nWe were not able to fetch the news at the moment. Please, try again later!</string>
+	<string name="no_internet_connection">No internet connection!\nPlease, check your network connectivity, then try again.</string>
 	
 	<string name="by">By:</string>
+	<string name="try_again">Try Again</string>
 </resources>

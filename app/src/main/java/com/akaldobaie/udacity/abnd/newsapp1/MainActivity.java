@@ -14,8 +14,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -40,33 +40,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 	private static final String queryStringURL = "http://content.guardianapis.com/search?q=debates&api-key=test&show-tags=contributor";
 	private static final int NEWS_LOADER_ID = 1;
 	private NewsAdapter newsAdapter;
+	private LoaderManager loaderManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
-		if (cm != null)
-		{
-			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-			
-			boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
-			
-			if (!isConnected)
-			{
-				
-				ProgressBar loadingSpinner = findViewById(R.id.loading_spinner_progress_bar);
-				loadingSpinner.setVisibility(View.GONE);
-				
-				TextView emptyTextView = findViewById(R.id.empty_message_textview);
-				emptyTextView.setText(R.string.no_internet_connection);
-				
-				return;
-			}
-		}
 		
 		ListView newsListView = findViewById(R.id.list);
 		newsListView.setEmptyView(findViewById(R.id.empty_message_textview));
@@ -98,8 +78,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 			}
 		});
 		
-		LoaderManager loaderManager = getLoaderManager();
+		loaderManager = getLoaderManager();
 		loaderManager.initLoader(NEWS_LOADER_ID, null, this);
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		
+		if (!isInternetConnected() && loaderManager != null)
+		{
+			loaderManager.destroyLoader(NEWS_LOADER_ID);
+		}
 	}
 	
 	@Override
@@ -112,20 +103,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 	@Override
 	public void onLoadFinished(Loader<List<News>> loader, List<News> news)
 	{
-		
 		newsAdapter.clear();
 		
 		if (news != null && !news.isEmpty())
 		{
 			newsAdapter.addAll(news);
+			showProgressSpinner(false);
+			showMessage(false, 0);
+			showTryAgainButton(false);
 		} else
 		{
-			TextView emptyTextView = findViewById(R.id.empty_message_textview);
-			emptyTextView.setText(R.string.no_data_available);
+			showProgressSpinner(false);
+			showMessage(true, R.string.no_data_available);
+			showTryAgainButton(true);
 		}
-		
-		ProgressBar loadingSpinner = findViewById(R.id.loading_spinner_progress_bar);
-		loadingSpinner.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -136,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 	
 	private static class NewsLoader extends AsyncTaskLoader<List<News>>
 	{
+		
 		private final String LOG_TAG = NewsLoader.class.getName();
 		private String mUrl;
 		
@@ -179,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 			url = new URL(stringUrl);
 		} catch (MalformedURLException e)
 		{
-			Log.e(LOG_TAG, "Problem building the URL ", e);
+			Log.e(LOG_TAG, "Error while building the URL ", e);
 		}
 		return url;
 	}
@@ -218,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 			}
 		} catch (IOException e)
 		{
-			Log.e(LOG_TAG, "Error retrieving the news JSON results.", e);
+			Log.e(LOG_TAG, "Error while retrieving the news JSON results. " + e.getMessage(), e);
 		} finally
 		{
 			if (urlConnection != null)
@@ -362,5 +354,79 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 		Log.i(LOG_TAG, "Authors: " + authors.toString().trim());
 		
 		return authors.toString().trim();
+	}
+	
+	private Boolean isInternetConnected()
+	{
+		showProgressSpinner(true);
+		showMessage(false, 0);
+		
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		boolean isConnected = false;
+		
+		if (cm != null)
+		{
+			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+			isConnected = activeNetwork != null && activeNetwork.isConnected();
+			
+			if (!isConnected)
+			{
+				showTryAgainButton(true);
+				showMessage(true, R.string.no_internet_connection);
+			}
+		}
+		Log.i(LOG_TAG, "isInternetConnected: " + isConnected);
+		return isConnected;
+	}
+	
+	private void showTryAgainButton(Boolean show)
+	{
+		Button tryButton = findViewById(R.id.try_again_button);
+		
+		if (show)
+		{
+			tryButton.setVisibility(View.VISIBLE);
+			tryButton.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if (isInternetConnected())
+					{
+						reloadData();
+					}
+				}
+			});
+		} else
+		{
+			tryButton.setVisibility(View.GONE);
+			showProgressSpinner(false);
+		}
+	}
+	
+	private void showProgressSpinner(Boolean show)
+	{
+		if (show)
+			findViewById(R.id.loading_spinner_progress_bar).setVisibility(View.VISIBLE);
+		else
+			findViewById(R.id.loading_spinner_progress_bar).setVisibility(View.GONE);
+	}
+	
+	private void showMessage(Boolean show, int messageResId)
+	{
+		if (show)
+		{
+			TextView messageTextView = findViewById(R.id.empty_message_textview);
+			messageTextView.setText(messageResId);
+			messageTextView.setVisibility(View.VISIBLE);
+		} else
+		{
+			findViewById(R.id.empty_message_textview).setVisibility(View.GONE);
+		}
+	}
+	
+	private void reloadData()
+	{
+		loaderManager.restartLoader(NEWS_LOADER_ID, null, this);
 	}
 }

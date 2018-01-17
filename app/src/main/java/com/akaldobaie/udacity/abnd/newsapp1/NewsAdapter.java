@@ -11,9 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
+/*
  * Created by Abdullah Aldobaie (akdPro) on 1/14/18 at 5:51 PM.
- *
  */
 
 class NewsAdapter extends ArrayAdapter<News>
@@ -60,8 +59,10 @@ class NewsAdapter extends ArrayAdapter<News>
 		
 		News currentNews = getItem(position);
 		
-		if( currentNews == null)
-		{ return convertView; }
+		if (currentNews == null)
+		{
+			return convertView;
+		}
 		
 		holder.sectionTextView.setText(currentNews.getSectionName());
 		holder.dateTextView.setText(currentNews.getFormattedDate());
@@ -76,7 +77,7 @@ class NewsAdapter extends ArrayAdapter<News>
 		} else
 		{
 			holder.authorsTextView.setVisibility(View.GONE);
-			holder.authorsTextView.setVisibility(View.GONE);
+			holder.authorsLabelTextView.setVisibility(View.GONE);
 		}
 		
 		return convertView;

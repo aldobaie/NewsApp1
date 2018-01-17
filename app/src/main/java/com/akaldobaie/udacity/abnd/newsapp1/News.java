@@ -10,6 +10,7 @@ import java.util.Date;
  */
 class News
 {
+	
 	private String title = "";
 	private String publicationDate = "";
 	private String url = "";

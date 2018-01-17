@@ -18,9 +18,27 @@
 		<item name="android:orientation">vertical</item>
 	</style>
 	
+	<style name="ListItem">
+		<item name="android:background">@color/listItemBackgroundColor</item>
+	</style>
+	
 	<style name="EmptyMessageTextView">
 		<item name="android:layout_marginTop">8dp</item>
+		<item name="android:textAlignment">center</item>
 		<item name="android:textAppearance">?android:textAppearanceMedium</item>
+		<item name="android:animateLayoutChanges">true</item>
+	</style>
+	
+	<style name="TryAgainButton">
+		<item name="android:layout_margin">16dp</item>
+		<item name="android:textAlignment">center</item>
+		<item name="android:background">@color/colorPrimary</item>
+		<item name="android:textColor">@color/white</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textAppearance">?android:textAppearanceLarge</item>
+		<item name="android:visibility">gone</item>
+		<item name="android:text">@string/try_again</item>
+		<item name="android:animateLayoutChanges">true</item>
 	</style>
 	
 	<style name="SectionTextView">
@@ -40,12 +58,13 @@
 	
 	<style name="TitleTextView">
 		<item name="android:layout_gravity">start|top</item>
+		<item name="android:fontFamily">sans-serif-medium</item>
+		<item name="android:gravity">start</item>
+		<item name="android:padding">8dp</item>
 		<item name="android:textAlignment">textStart</item>
-		<item name="android:textAllCaps">true</item>
 		<item name="android:textColor">@color/white</item>
 		<item name="android:textSize">16sp</item>
 	</style>
-	<!--android:layout_gravity="end"-->
 	
 	<style name="AuthorsLabelTextView">
 		<item name="android:text">@string/by</item>
